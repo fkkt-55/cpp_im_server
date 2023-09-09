@@ -13,15 +13,21 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
-#endif  // _WIN32
-
-#ifdef __linux__
+#else
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#endif  // __linux__
+
+#endif  // _WIN32
 
 namespace fkkt {
+
+#ifdef _WIN32
+typedef SOCKET KtSocket;
+#else
+typedef int KtSocket;
+#endif
+
 class server {
    public:
     server(const std::string& address, int port);
@@ -34,13 +40,9 @@ class server {
     std::unique_ptr<fkkt::logger> log = nullptr;
     std::string address;
     int port;
+    KtSocket server_socket{};
 #ifdef _WIN32
     WSAData wsa_data{};
-    SOCKET client_socket{};
-#endif
-#ifdef __linux__
-    // WSAData wsa_data{};
-    int client_socket{};
 #endif
 };
 }  // namespace fkkt
