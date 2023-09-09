@@ -12,10 +12,14 @@
 #include <logger.h>
 
 #ifdef _WIN32
-
 #include <winsock2.h>
-
 #endif // _WIN32
+
+#ifdef __linux__
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#endif // __linux__
 
 namespace fkkt {
     class server {
@@ -30,8 +34,14 @@ namespace fkkt {
         std::unique_ptr<fkkt::logger> log = nullptr;
         std::string address;
         int port;
+#ifdef _WIN32
         WSAData wsa_data{};
         SOCKET client_socket{};
+#endif
+#ifdef __linux__
+        // WSAData wsa_data{};
+        int client_socket{};
+#endif
     };
 }
 

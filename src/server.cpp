@@ -1,9 +1,11 @@
-//
 // Created by Fkkt on 2023/9/7.
 //
 
 #include <iostream>
 #include <utility>
+#include <string>
+#include <cstring>
+#include <arpa/inet.h>
 #include <server.h>
 
 namespace fkkt {
@@ -15,23 +17,29 @@ namespace fkkt {
     }
 
     server::~server() {
+#ifdef _WIN32 
         if (client_socket) {
             closesocket(client_socket);
         }
         WSACleanup();
+#endif // _WIN32
     }
 
     void server::start() {
+#ifdef __linux__ 
+        client_socket = socket(AF_INET, SOCK_STREAM, 0);
+        if (client_socket == -1) {
+            log->e("Failed to create socket");
+            return;
+        }
+#endif // __linux__
+
+#ifdef _WIN32
         if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
             log->e("Failed to initialize Win_sock");
             return;
         }
-
-        client_socket = socket(AF_INET, SOCK_STREAM, 0);
-        if (client_socket == INVALID_SOCKET) {
-            log->e("Failed to create socket");
-            return;
-        }
+#endif // _WIN32
 
         // Set server info
         sockaddr_in serverAddr{};
@@ -40,7 +48,7 @@ namespace fkkt {
         serverAddr.sin_port = htons(port);
 
         // Connect to server
-        if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+        if (connect(client_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) == -1) {
             log->e("Can't connect to server");
             return;
         }
@@ -49,7 +57,6 @@ namespace fkkt {
 
         char message[1024];
 
-        // 客户端发送消息并接收回复
         while (true) {
             std::cout << "Enter a message (or 'exit' to quit): ";
             std::cin.getline(message, sizeof(message));
