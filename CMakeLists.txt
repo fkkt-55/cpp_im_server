@@ -16,10 +16,7 @@ add_executable(cpp_im_server main.cpp
 )
 
 if(WIN32)
-        
-target_link_libraries(cpp_im_server
-        ${CMAKE_SOURCE_DIR}/lib/win/WS2_32.Lib
-)
-
+        target_link_libraries(cpp_im_server
+                ${CMAKE_SOURCE_DIR}/lib/win/WS2_32.Lib
+        )
 endif(WIN32)
-

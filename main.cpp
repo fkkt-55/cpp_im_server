@@ -1,7 +1,7 @@
+#include <logger.h>
 #include <server.h>
 #include <memory>
 #include <string>
-#include <logger.h>
 
 using namespace std;
 
@@ -14,7 +14,6 @@ int main() {
 
 #ifdef _WIN32
     system("pause");
-#endif // _WIN32
+#endif  // _WIN32
     return 0;
 }
-
